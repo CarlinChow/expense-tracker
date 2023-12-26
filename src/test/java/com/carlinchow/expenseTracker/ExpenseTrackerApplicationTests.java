@@ -1,4 +1,4 @@
-package com.carlinchow.expenseTracker.expenseTracker;
+package com.carlinchow.expenseTracker;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
