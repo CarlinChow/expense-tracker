@@ -1,7 +1,7 @@
 services:
   app:
     container_name: "server"
-    image: 'expense-tracker/app:latest'
+    image: 'expense-tracker/server:latest'
     ports:
       - "8080:8080"
     build:
