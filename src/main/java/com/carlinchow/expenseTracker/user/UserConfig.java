@@ -4,18 +4,27 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.List;
+
 @Configuration
 public class UserConfig {
 
     @Bean
     CommandLineRunner commandLineRunner(UserRepository userRepository){
         return args -> {
-            System.out.println("RUNNING MY USER CONFIG");
             User john = new User(
                     "johnlam@gmail.com",
                     "mypants"
             );
-            userRepository.save(john);
+            User amy = new User(
+                    "amychow@gmail.com",
+                    "secretpassword"
+            );
+            User mark = new User(
+                    "markjones@gmail.com",
+                    "spaghetti"
+            );
+            userRepository.saveAll(List.of(john, amy, mark));
         };
     }
 }

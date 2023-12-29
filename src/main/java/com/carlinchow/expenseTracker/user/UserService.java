@@ -19,7 +19,7 @@ public class UserService {
     }
 
     public void addUser(User user){
-        if(this.repository.findOneByEmail(user.getEmail()).isPresent()){
+        if(this.repository.findByEmail(user.getEmail()).isPresent()){
             throw new IllegalStateException("email taken");
         }
         this.repository.save(user);
