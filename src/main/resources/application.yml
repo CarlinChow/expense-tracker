@@ -1,8 +1,13 @@
 spring:
   jpa:
     properties:
+      show_sql: true
       hibernate:
         format_sql: true
     hibernate:
-      ddl-auto: create
-    show-sql: true
+      ddl-auto: create-drop
+logging:
+  level:
+    sql: debug
+    org.hibernate.orm.jdbc.bind: trace
+

@@ -8,6 +8,8 @@ import jakarta.persistence.*;
 public class Category {
     private @Id @GeneratedValue Long id;
     private String name;
+    @Column(name = "category_type", insertable = false, updatable = false)
+    private String categoryType;
 
     public Category() {}
 
@@ -31,6 +33,10 @@ public class Category {
         this.name = name;
     }
 
+    public String getCategoryType() {
+        return this.categoryType;
+    }
+
     @Override
     public String toString() {
         return "Category{" +
@@ -39,3 +45,5 @@ public class Category {
                 '}';
     }
 }
+
+

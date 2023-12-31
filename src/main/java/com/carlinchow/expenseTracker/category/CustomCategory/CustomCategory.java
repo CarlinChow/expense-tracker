@@ -2,15 +2,17 @@ package com.carlinchow.expenseTracker.category.CustomCategory;
 
 import com.carlinchow.expenseTracker.category.Category;
 import com.carlinchow.expenseTracker.user.User;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @DiscriminatorValue("CUSTOM")
 public class CustomCategory extends Category {
-    private @ManyToOne @JoinColumn(name = "user_id") User user;
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne()
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public CustomCategory() { super(); }
 
@@ -27,3 +29,4 @@ public class CustomCategory extends Category {
         this.user = user;
     }
 }
+
