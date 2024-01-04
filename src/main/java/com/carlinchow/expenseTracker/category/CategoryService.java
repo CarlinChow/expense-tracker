@@ -7,7 +7,9 @@ import com.carlinchow.expenseTracker.category.DefaultCategory.DefaultCategoryRep
 import com.carlinchow.expenseTracker.user.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,13 +21,11 @@ import java.util.stream.Stream;
 public class CategoryService {
     private final DefaultCategoryRepository defaultCategoryRepository;
     private final CustomCategoryRepository customCategoryRepository;
-    private final UserService userService;
 
     @Autowired
     public CategoryService(DefaultCategoryRepository defaultCategoryRepository, CustomCategoryRepository customCategoryRepository, UserService userService) {
         this.defaultCategoryRepository = defaultCategoryRepository;
         this.customCategoryRepository = customCategoryRepository;
-        this.userService = userService;
     }
 
     public List<CategoryDTO> getCategories(Long id) {
@@ -37,22 +37,19 @@ public class CategoryService {
         return defaultCategories;
     }
 
-    public void createCustomCategory(Category category, Long id) {
-        Optional<User> optionalUser = this.userService.findById(id);
-        if(optionalUser.isEmpty()){
-            throw new IllegalArgumentException("user with id " + id + " does not exist");
-        }
-        CustomCategory customCategory = new CustomCategory(category.getName(), optionalUser.get());
+    public void createCustomCategory(Category category, User user) {
+        CustomCategory customCategory = new CustomCategory(category.getName(), user);
         this.customCategoryRepository.save(customCategory);
     }
 
     public void deleteCustomCategory(Long categoryId, Long userId) {
         Optional<CustomCategory> optionalCategory = this.customCategoryRepository.findById(categoryId);
         if(optionalCategory.isEmpty()){
-            throw new IllegalArgumentException("no such category with id " + categoryId + " exist");
+            System.out.println("CATEGORY DOESNT EXIST");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with id: " + categoryId + " does not exist");
         }
         if(!Objects.equals(optionalCategory.get().getUser().getId(), userId)){
-            throw new IllegalArgumentException("User does not have permission to delete this category");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User does not have authorization to delete this category");
         }
         this.customCategoryRepository.deleteById(categoryId);
     }
@@ -60,11 +57,12 @@ public class CategoryService {
     public void updateCustomCategory(Long categoryId, Long userId, String name) {
         Optional<CustomCategory> optionalCategory = this.customCategoryRepository.findById(categoryId);
         if(optionalCategory.isEmpty()){
-            throw new IllegalArgumentException("no such category with id " + categoryId + " exist");
+            System.out.println("CATEGORY DOESNT EXIST");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category with id: " + categoryId + " does not exist");
         }
         CustomCategory category = optionalCategory.get();
         if(!Objects.equals(category.getUser().getId(), userId)){
-            throw new IllegalArgumentException("User does not have permission to update this category");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User does not have the authorization to modify this category");
         }
         category.setName(name);
     }

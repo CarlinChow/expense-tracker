@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/user")
+@RequestMapping(path = "/api/user")
 public class UserController {
     private final UserService service;
 
@@ -18,11 +18,6 @@ public class UserController {
     @GetMapping
     public List<User> getUsers(){
         return this.service.getUsers();
-    }
-
-    @PostMapping
-    public void addUser(@RequestBody User user){
-        this.service.addUser(user);
     }
 
     @DeleteMapping(path = "{userId}")
