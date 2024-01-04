@@ -1,12 +1,14 @@
 package com.carlinchow.expenseTracker.category;
 
+import com.carlinchow.expenseTracker.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "api/category")
+@RequestMapping(path = "/api/category")
 public class CategoryController {
     private final CategoryService service;
 
@@ -16,22 +18,22 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<CategoryDTO> getCategories(@RequestHeader(value = "user-id", required = false) Long id) {
-        return this.service.getCategories(id);
+    public List<CategoryDTO> getCategories(@AuthenticationPrincipal User user) {
+        return this.service.getCategories(user.getId());
     }
 
     @PostMapping
-    public void postCategory(@RequestBody Category category, @RequestHeader("user-id") Long id){
-        this.service.createCustomCategory(category, id);
+    public void postCategory(@RequestBody Category category, @AuthenticationPrincipal User user){
+        this.service.createCustomCategory(category, user);
     }
 
     @DeleteMapping(path = "/{id}")
-    public void deleteCategory(@PathVariable("id") Long categoryId, @RequestHeader("user-id") Long id){
-        this.service.deleteCustomCategory(categoryId, id);
+    public void deleteCategory(@PathVariable("id") Long categoryId, @AuthenticationPrincipal User user){
+        this.service.deleteCustomCategory(categoryId, user.getId());
     }
 
     @PutMapping(path = "/{id}")
-    public void updateCategory(@PathVariable("id") Long categoryId, @RequestHeader("user-id") Long id, @RequestParam String name){
-        this.service.updateCustomCategory(categoryId, id, name);
+    public void updateCategory(@PathVariable("id") Long categoryId, @RequestParam String name, @AuthenticationPrincipal User user){
+        this.service.updateCustomCategory(categoryId, user.getId(), name);
     }
 }
