@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "category_type")
+@Table(indexes = {@Index(name = "multi_idx_category", columnList = "category_type, user_id")})
 public class Category {
     private @Id @GeneratedValue Long id;
     private String name;

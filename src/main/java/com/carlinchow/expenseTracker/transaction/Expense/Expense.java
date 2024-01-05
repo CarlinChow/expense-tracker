@@ -4,10 +4,13 @@ import com.carlinchow.expenseTracker.category.Category;
 import com.carlinchow.expenseTracker.transaction.Transaction;
 import com.carlinchow.expenseTracker.user.User;
 import jakarta.persistence.*;
+import lombok.Builder;
+
 import java.time.LocalDate;
 
 @Entity
 @DiscriminatorValue("EXPENSE")
+@Builder
 public class Expense extends Transaction {
     private @ManyToOne @JoinColumn(name="category_id") Category category;
 

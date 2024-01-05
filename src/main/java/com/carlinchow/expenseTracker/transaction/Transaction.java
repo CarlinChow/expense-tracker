@@ -2,11 +2,18 @@ package com.carlinchow.expenseTracker.transaction;
 
 import com.carlinchow.expenseTracker.user.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.WithBy;
+
 import java.time.LocalDate;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="transaction_type")
+@Builder
 public class Transaction {
     private @Id @GeneratedValue Long id;
     private LocalDate date;
@@ -14,7 +21,9 @@ public class Transaction {
     private String description;
     private @ManyToOne @JoinColumn(name="user_id") User user;
 
-    public Transaction() {}
+    public Transaction(){
+
+    }
 
     public Transaction(LocalDate date, Float amount, String description, User user) {
         this.date = date;
@@ -53,6 +62,14 @@ public class Transaction {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
