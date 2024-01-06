@@ -28,9 +28,9 @@ public class CategoryService {
         this.customCategoryRepository = customCategoryRepository;
     }
 
-    public List<CategoryDTO> getCategories(Long id) {
-        List<CategoryDTO> defaultCategories = defaultCategoryRepository.findAllCategoryDTO();
-        List<CategoryDTO> customCategories = customCategoryRepository.findAllCategoryDTOByUser(id);
+    public List<CategoryDto> getCategories(Long id) {
+        List<CategoryDto> defaultCategories = defaultCategoryRepository.findAllCategoryDto();
+        List<CategoryDto> customCategories = customCategoryRepository.findAllCategoryDtoByUser(id);
         if(customCategories.size() > 0){
             return Stream.concat(defaultCategories.stream(), customCategories.stream()).toList();
         }

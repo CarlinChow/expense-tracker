@@ -4,6 +4,7 @@ import com.carlinchow.expenseTracker.user.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import java.util.List;
 @Table(name="users")
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode
 public class User implements UserDetails {
     private @Id @GeneratedValue Long id;
     private @Column(unique = true) String email;
@@ -52,6 +54,10 @@ public class User implements UserDetails {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole(){
+        return this.role;
     }
 
     @Override

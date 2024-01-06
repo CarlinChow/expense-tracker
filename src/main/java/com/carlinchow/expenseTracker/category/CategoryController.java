@@ -18,7 +18,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<CategoryDTO> getCategories(@AuthenticationPrincipal User user) {
+    public List<CategoryDto> getCategories(@AuthenticationPrincipal User user) {
         return this.service.getCategories(user.getId());
     }
 
