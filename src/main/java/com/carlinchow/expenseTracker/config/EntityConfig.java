@@ -65,8 +65,8 @@ public class EntityConfig {
             DefaultCategory autoAndTransport = new DefaultCategory("auto & transport");
             DefaultCategory billsAndUtility = new DefaultCategory("bills & utility");
             defaultCategoryRepository.saveAll(List.of(shopping, foodAndDining,autoAndTransport, billsAndUtility));
-            User john = userRepository.findByEmail("amychow@gmail.com").orElseThrow();
-            User amy = userRepository.findByEmail("johnlam@gmail.com").orElseThrow();
+            User amy = userRepository.findByEmail("amychow@gmail.com").orElseThrow();
+            User john = userRepository.findByEmail("johnlam@gmail.com").orElseThrow();
             CustomCategory pet = new CustomCategory("pet", john);
             CustomCategory beauty = new CustomCategory("beauty", amy);
             customCategoryRepository.saveAll(List.of(pet, beauty));
@@ -78,6 +78,7 @@ public class EntityConfig {
                                     .amount(1250f)
                                     .description("rent payment for september")
                                     .category(defaultCategories.get(3))
+                                    .user(john)
                                     .build();
             var johnLululemon = Expense.builder()
                     .date(LocalDate.of(2023, Month.DECEMBER, 25))

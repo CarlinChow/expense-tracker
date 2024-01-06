@@ -14,12 +14,21 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
+@Table(indexes = {@Index(name ="multi_idx_transaction", columnList = "user_id, date DESC, transaction_type")})
 public class Transaction {
 
     @Setter(AccessLevel.NONE)
     private @Id @GeneratedValue Long id;
+
     private LocalDate date;
+
     private Float amount;
+
     private String description;
+
     private @ManyToOne @JoinColumn(name="user_id") User user;
+
+    @Column(name = "transaction_type", insertable = false, updatable = false)
+    @Setter(AccessLevel.NONE)
+    private String transactionType;
 }

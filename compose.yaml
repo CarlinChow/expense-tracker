@@ -13,8 +13,10 @@ services:
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - APPLICATION_SECURITY_JWT_SECRETKEY=${JWT_SECRET}
+      - APPLICATION_SECURITY_JWT_EXPIRATION=${JWT_EXPIRATION}
       - SPRING_JPA_HIBERNATE_DDLAUTO=create-drop # change to update in production
       - SERVER_ERROR_INCLUDEMESSAGE=always # change to on-param in production
+      - SERVER_ERROR_INCLUDEBINDINGERRORS=always # change in production
 
   postgres:
     container_name: "database"

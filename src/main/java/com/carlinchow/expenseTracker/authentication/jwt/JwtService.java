@@ -18,6 +18,8 @@ import java.util.Map;
 public class JwtService {
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
+    @Value("${application.security.jwt.expiration}")
+    private Long jwtExpiration;
 
     public String extractEmail(String token){
         return extractClaim(token, Claims::getSubject);
@@ -33,13 +35,11 @@ public class JwtService {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails){
-        Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * 24);
-        System.out.println("IM HERE" + "SECRET KEY IS " + this.secretKey);
         return Jwts.builder()
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(expiration)
+                .expiration(new Date(System.currentTimeMillis() + this.jwtExpiration))
                 .signWith(getSignInKey())
                 .compact();
     }
