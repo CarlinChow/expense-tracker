@@ -8,7 +8,6 @@ type authObj = {
 
 export const login = (data: authObj) => {
     const { email, password } = data
-    console.log(`${API_URL}/auth/authenticate`)
     return axios.post(`${API_URL}/auth/authenticate`, {email, password}, { headers: {'content-type': 'application/json'}})
 }
 

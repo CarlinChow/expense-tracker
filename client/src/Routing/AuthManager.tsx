@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
 import { useMutation } from '@tanstack/react-query';
-import { login, register } from './utils'
+import { login, register } from './helpers/utils'
 import SplashPage from '../Common/SplashPage';
 import ProtectedRoutes from './ProtectedRoutes';
 import LoginScreen from '../Auth/LoginScreen';
@@ -87,11 +87,12 @@ const Routes = () => {
                     console.log("Error here: " + e)
                 }
                 if(loginIsSuccess){
-                    const token = loginData.data
+                    const token = loginData.data.token
+                    console.log(token)
                     await SecureStore.setItemAsync("token", token)
                     dispatch({ type: 'SIGN_IN', token: token});
                 }else{
-                    console.log("yo mama " + loginError?.message)
+                    console.log(loginError)
                 }
             },
             signOut: () => dispatch({ type: 'SIGN_OUT' }),

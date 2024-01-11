@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { AuthContext } from '../Routes'
+import { AuthContext } from '../AuthManager'
 
 // https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/
 export const useAuthContext = () => {

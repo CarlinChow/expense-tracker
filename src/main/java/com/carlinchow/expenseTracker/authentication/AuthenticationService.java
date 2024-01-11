@@ -1,7 +1,6 @@
 package com.carlinchow.expenseTracker.authentication;
 
 import com.carlinchow.expenseTracker.authentication.jwt.JwtService;
-import com.carlinchow.expenseTracker.user.UserService;
 import com.carlinchow.expenseTracker.user.enums.Role;
 import com.carlinchow.expenseTracker.user.User;
 import com.carlinchow.expenseTracker.user.UserRepository;

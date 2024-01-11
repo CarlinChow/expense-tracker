@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import Routes from './src/Routing/Routes'
+import AuthManager from './src/Routing/AuthManager'
 
 const queryClient = new QueryClient()
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-        <Routes />
+        <AuthManager />
     </QueryClientProvider>
   );
 }
