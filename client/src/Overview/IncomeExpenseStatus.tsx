@@ -10,21 +10,16 @@ export type Props = {
 const IncomeExpenseStatus: React.FC<Props> = ({
     income,
     expense,
-    upcomingExpense
 }) => {
     return (
         <View style={styles.container}>
             <View style={styles.block}>
                 <Text style={styles.text}>Income: </Text>
-                <Text style={styles.text}>${income}</Text>
+                <Text style={[styles.text, {color: '#6495ED', fontWeight: '800'}]}>${income}</Text>
             </View>
             <View style={styles.block}>
-                <Text style={styles.text}>Expense: </Text>
-                <Text style={styles.text}>${expense}</Text>
-            </View>
-            <View style={styles.block}>
-                <Text style={styles.text}>Upcoming Expense:</Text>
-                <Text style={styles.text}>${upcomingExpense}</Text>
+                <Text style={styles.text}>Expenses: </Text>
+                <Text style={[styles.text, {fontWeight: '700'}]}>-${expense}</Text>
             </View>
         </View>
     )
@@ -32,21 +27,20 @@ const IncomeExpenseStatus: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
     container:{
-        flex: 1,
         flexDirection: 'column',
         alignItems: 'stretch',
-        padding: 10,
-        gap: 5,
+        paddingHorizontal: 25,
+        paddingVertical: 15,
     },
     block: {
         display: 'flex',
         justifyContent: 'space-between',
         flexDirection: 'row',
-        paddingVertical: 10,
+        paddingVertical: 15,
     },
     text: {
         fontSize: 17,
-        fontWeight: '600',
+        fontWeight: '700',
     }
 })
 

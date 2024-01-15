@@ -5,9 +5,13 @@ import * as SecureStore from 'expo-secure-store';
 import { useMutation } from '@tanstack/react-query';
 import { login, register } from './helpers/utils'
 import SplashPage from '../Common/SplashPage';
-import ProtectedRoutes from './ProtectedRoutes';
-import LoginScreen from '../Auth/LoginScreen';
-import RegisterScreen from '../Auth/RegisterScreen';
+import TabRoutes from './TabRoutes';
+import SignInScreen from '../Auth/SignInScreen';
+import SignUpScreen from '../Auth/SignUpScreen';
+import TransactionFormScreen from '../Modal/TransactionFormScreen';
+import axios from 'axios'
+import TransactionScreen from '../Transaction/TransactionScreen';
+import type { RootStackParamList } from './types';
 
 type AuthContext = {
     signIn: Function,
@@ -28,7 +32,7 @@ type ActionObj = {
     token?: string
 }
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AuthContext = createContext<AuthContext | null>(null);
 
@@ -60,54 +64,54 @@ const userStateReducer = (prevState: UserState, action: ActionObj): UserState =>
 
 const Routes = () => {
     const [state, dispatch] = useReducer(userStateReducer, { isLoading: true, isSignOut: false, token: null})
-    const { data: loginData , isSuccess: loginIsSuccess, error: loginError, mutateAsync: loginMutate } = useMutation({mutationFn: login})
-    const { data: registerData, isSuccess: registerIsSuccess, error: registerError, mutateAsync: registerMutate } = useMutation({mutationFn: register})
+    const { reset, mutate: loginMutate } = useMutation({
+        mutationFn: login,
+        onSuccess: async({data}) => {
+            const { token } = data
+            await SecureStore.setItemAsync("token", token)
+            axios.defaults.headers.common["Authorization"] = 'Bearer ' + token
+            dispatch({ type: 'SIGN_IN', token: token})
+        },
+        onError: () => {
+            // display error toast
+        }
+    })
+    const { mutate: registerMutate } = useMutation({
+        mutationFn: register,
+        onSuccess: async({data}) => {
+            const { token } = data
+            await SecureStore.setItemAsync("token", token)
+            axios.defaults.headers.common["Authorization"] = 'Bearer ' + token
+            dispatch({ type: 'SIGN_IN', token: token})
+        }
+    })
 
     useEffect(() => {
         const restoreToken = async() => {
-            let token;
-            try{
-                token = await SecureStore.getItemAsync("token")
-            }catch(e){
-                console.log(e)
-            }
+            let token = await SecureStore.getItemAsync("token")
             if(token != null){
                 dispatch({type: "RESTORE_TOKEN", token: token})
             }
         }
         restoreToken()
+        axios.defaults.headers.common["Content-Type"] = "application/json"
+        axios.defaults.headers.common["Accept"] = "application/json"
     },[])
 
-    const authContext =  useMemo(
-        () => ({
-            signIn: async (email: string , password: string) => {
-                try{
-                    await loginMutate({email, password})
-                }catch(e){
-                    console.log("Error here: " + e)
-                }
-                if(loginIsSuccess){
-                    const token = loginData.data.token
-                    console.log(token)
-                    await SecureStore.setItemAsync("token", token)
-                    dispatch({ type: 'SIGN_IN', token: token});
-                }else{
-                    console.log(loginError)
-                }
+    const authContext = useMemo(() => ({
+            signIn: (email: string , password: string) => {
+                loginMutate({email, password})
+
             },
-            signOut: () => dispatch({ type: 'SIGN_OUT' }),
-            signUp: async (email: string, password: string) => {
-                await registerMutate({email, password})
-                if(registerIsSuccess){
-                    const token = registerData.data
-                    await SecureStore.setItemAsync("token", token)
-                    dispatch({ type: 'SIGN_IN', token: token});
-                }else{
-                    console.log(registerError?.message)
-                }
+            signOut: async() => {
+                await SecureStore.deleteItemAsync("token")
+                delete axios.defaults.headers.common["Authorization"];
+                dispatch({ type: 'SIGN_OUT' })
             },
-          }),
-        []
+            signUp:  (email: string, password: string) => {
+                registerMutate({email, password})
+            }
+        }), []
     )
 
     if(state.isLoading){
@@ -118,12 +122,56 @@ const Routes = () => {
             <NavigationContainer>
                 <Stack.Navigator>
                     {state.token == null ? (
-                        <>
-                            <Stack.Screen name={"Sign in"} component={LoginScreen}/>
-                            <Stack.Screen name={"Sign up"} component={RegisterScreen}/>
-                        </>
+                        // auth screens
+                        <Stack.Group>
+                            <Stack.Screen 
+                                name={"signIn"} 
+                                component={SignInScreen}
+                                options = {{
+                                    animationTypeForReplace: "pop",
+                                    headerShown: false,
+                                }}   
+                            />
+                            <Stack.Screen 
+                                name={"signUp"} 
+                                component={SignUpScreen}
+                                options = {{
+                                    headerShown: false,
+                                }}
+                            />
+                        </Stack.Group>
                     ) : (
-                        <Stack.Screen name={"protectedRoutes"} component={ProtectedRoutes}/>
+                        // protected screens
+                        <Stack.Group>
+                            <Stack.Screen 
+                                name="tabRoutes"
+                                component={TabRoutes} 
+                                options={{
+                                    headerShown: false,
+                                    animationTypeForReplace: "push"
+                                }}   
+                            />
+                            <Stack.Screen 
+                                name="transactionForm" 
+                                component={TransactionFormScreen}
+                                options={{
+                                    headerShown: false,
+                                    presentation: 'modal'
+                                }}
+                            />
+                            <Stack.Screen 
+                                name="transaction" 
+                                component={TransactionScreen}
+                                options={{
+                                    headerShown: false
+                                    // headerShadowVisible: false,
+                                    // headerStyle: {
+                                    //     backgroundColor: '#F8F8FF'
+                                    // },
+                                    // title: "",
+                                }}
+                            />
+                        </Stack.Group>
                     )}
                 </Stack.Navigator>
             </NavigationContainer>

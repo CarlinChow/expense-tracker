@@ -5,43 +5,42 @@ import ProgressBar from '../Common/ProgressBar'
 type Props = {
     income: number,
     expense: number,
+    upcomingExpense?: number,
 }
 
 const SpendingBar: React.FC<Props> = ({
     income, 
-    expense
+    expense,
 }) => {
     const percentage = ((expense / income) * 100)
-    if(income == null || expense == null){
-        return(<></>)
-    }
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>
-                <Text style={styles.boldedText}>${expense}</Text> of ${income} spent
-            </Text>
             <ProgressBar
-                percentage={percentage} 
-                warningColor={"#FFDB58"}
-                outerBarColor={'#32906E'}
-                innerBarColor={'#84CFB4'}
+                barOne={{
+                    percentage: percentage,
+                    color: '#B9D9EB'
+                }} 
+                outerBarColor={'#5072A7'}
                 height={12}
             /> 
+            <Text style={styles.text}>
+                <Text style={styles.boldedText}>${expense}</Text> of ${income} spent this month
+            </Text>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
     container:{
-        paddingHorizontal: 10,
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        gap: 10,
+        gap: 5,
     },
     text:{
-        fontSize: 15,
+        fontSize: 12,
         color: 'white',
+        paddingHorizontal: 5,
     },
     boldedText:{
         fontWeight: "bold",
