@@ -7,9 +7,18 @@ type Props = {
     navigation: NativeStackNavigationProp<RootStackParamList, 'transaction'>
     editState: boolean,
     setEditState: Function,
+    createDiscardAlert: Function,
 }
 
-const Header:React.FC<Props> = ({navigation, editState, setEditState}) => {
+const Header:React.FC<Props> = ({navigation, editState, setEditState, createDiscardAlert}) => {
+    const handleOnPressEdit = () => {
+        if(editState === true){
+            createDiscardAlert()
+        }else{
+            setEditState(true)
+        }
+    }
+
     return (
         <View style={styles.header}>
             {/* change to back icon later*/}
@@ -20,7 +29,7 @@ const Header:React.FC<Props> = ({navigation, editState, setEditState}) => {
                 <Text style={styles.backBtnText}>Back</Text> 
             </TouchableOpacity>
             <TouchableOpacity
-                onPress={() => setEditState(!editState)}
+                onPress={handleOnPressEdit}
                 style={styles.editBtnContainer}
             >
                 <Text style={[styles.editBtnText, {

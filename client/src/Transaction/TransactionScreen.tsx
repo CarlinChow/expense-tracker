@@ -3,62 +3,68 @@ import { Text, View, StyleSheet, TextInput, TouchableHighlight, Alert, StatusBar
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import type { RootStackParamList } from '../Routing/types'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { capitalize, stringToDateObject, dateObjectToString } from '../Common/helpers/utils'
+import { capitalize, stringToDateObject } from '../Common/helpers/utils'
 import Header from './Header'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { Toast } from 'toastify-react-native'
 import CategoryPicker from '../Common/CategoryPicker'
 import type { Category } from '../Common/types'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { deleteTransaction, updateTransaction } from './helpers/utils'
+import { useDeleteTransaction, useUpdateTransaction } from './helpers/hooks'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'transaction', 'rootStack'>
 
 const TransactionScreen:React.FC<Props> = ({route, navigation}) => {
     const { transaction: { id, amount, date, description, transactionType, category } } = route.params
-    const [ editState, setEditState ] = useState(false)
     const [ amountState, setAmountState ] = useState(amount.toFixed(2))
-    const [ dateState, setDateState ] = useState(stringToDateObject(date))
+    const [ dateState, setDateState ] = useState<Date>(stringToDateObject(date))
     const [ descriptionState, setDescriptionState ] = useState(description)
-    const [ modalVisible, setModalVisible ] = useState(false)
     const [ categoryState, setCategoryState ] = useState<Category | undefined>(category)
-    const queryClient = useQueryClient()
-    const deleteMutation = useMutation({
-        mutationFn: deleteTransaction,
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['transaction']})
-            navigation.goBack()
-        },
-        onError: (error) => Toast.error(`Something went wrong: ${error.message}`, 'top')
-    })
-    const updateMutation = useMutation({
-        mutationFn: updateTransaction,
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['transaction']})
-            Toast.success('Transaction sucessfully updated!',  'top')
-            setEditState(false)
-        },
-        onError: (error) => Toast.error(`Something went wrong: ${error.message}`, 'top')
-    })
+    const [ modalVisible, setModalVisible ] = useState(false)
+    const [ editState, setEditState ] = useState(false)
+    const deleteTransaction = useDeleteTransaction()
+    const updateTransaction = useUpdateTransaction()
     const insets = useSafeAreaInsets()
     const descriptionInputRef = useRef<TextInput>(null)
 
-    const createDeleteAlert = () => Alert.alert(
-        "Delete Transaction", 
-        "Are you sure you want to delete this transaction?",
-        [{ text: 'Never mind'}, { text: 'Delete', style: 'destructive', onPress: () => {
-                deleteMutation.mutate(id)
-        }}
+    const createDeleteAlert = () => Alert.alert( "Delete Transaction", "Are you sure you want to delete this transaction?",
+        [
+            { text: 'Never mind'}, 
+            { 
+                text: 'Delete', 
+                style: 'destructive', 
+                onPress: () => {
+                    deleteTransaction.mutate(id, {
+                        onSuccess: () => navigation.goBack(),
+                        onError: (error) => Toast.error(`Something went wrong: ${error.message}`, 'top') 
+                    })
+                }
+            }
     ])
+
+    const createDiscardAlert = () => Alert.alert("Discard Changes", "Are you sure you want to discard these changes you've made?",
+        [{ text: 'Never mind' }, { text: 'Discard changes', style: 'destructive', onPress: () => {
+            setEditState(false)
+            setAmountState(amount.toFixed(2))
+            setDateState(stringToDateObject(date))
+            setDescriptionState(description)
+            setCategoryState(category)
+        }}]
+    )
     
     const handleSaveChanges = () => {
-        updateMutation.mutate({
+        updateTransaction.mutate({
             id: id,
             amount: parseFloat(amountState),
             description: descriptionState,
-            date: dateObjectToString(dateState),
+            date: dateState,
             category: categoryState,
             transactionType: transactionType,
+        }, { 
+            onSuccess: () => {           
+                Toast.success('Transaction sucessfully updated!',  'top')
+                setEditState(false)
+            },
+            onError: (error) => Toast.error(`Something went wrong: ${error.message}`, 'top')
         })
     }
     
@@ -72,13 +78,13 @@ const TransactionScreen:React.FC<Props> = ({route, navigation}) => {
                 paddingRight: insets.right,
             }]}>
                 <StatusBar barStyle={"dark-content"}/>
-                <Header navigation={navigation} editState={editState} setEditState={setEditState}/>
+                <Header navigation={navigation} editState={editState} setEditState={setEditState} createDiscardAlert={createDiscardAlert}/>
                 <View style={styles.amountContainer}>
                     <Text style={{fontSize: 60, fontWeight: '600',}}>$</Text>
                     <TextInput 
                         editable={editState}
                         style={styles.amountText}
-                        value={amountState?.toString()}
+                        value={amountState}
                         onChangeText={setAmountState}
                         keyboardType='numeric'
                         maxLength={7}
@@ -89,11 +95,7 @@ const TransactionScreen:React.FC<Props> = ({route, navigation}) => {
                         disabled={!editState}
                         value={dateState}
                         mode='date'
-                        onChange={(e, newDate) => {
-                            if(newDate != null){
-                                setDateState
-                            }
-                        }}
+                        onChange={(e, newDate) => newDate ? setDateState(newDate) : void(0)}
                     />
                 </View>
                 <View style={styles.typeContainer}>
@@ -156,7 +158,7 @@ const TransactionScreen:React.FC<Props> = ({route, navigation}) => {
                             underlayColor={"#DCDCDC"}
                             onPress={handleSaveChanges}
                         >
-                            {updateMutation.isPending ?
+                            {updateTransaction.isPending ?
                                 <ActivityIndicator size='small' /> 
                             :
                                 <Text style={[styles.btnText, {color: '#6495ED'}]}>Save Changes</Text>
@@ -168,7 +170,7 @@ const TransactionScreen:React.FC<Props> = ({route, navigation}) => {
                             underlayColor={"#DCDCDC"}
                             onPress={createDeleteAlert}
                         >
-                            {deleteMutation.isPending ?     
+                            {deleteTransaction.isPending ?     
                                 <ActivityIndicator size='small' /> 
                             :
                                 <Text style={[styles.btnText, {color:'#fd5c63'}]}>Delete</Text>
@@ -179,7 +181,7 @@ const TransactionScreen:React.FC<Props> = ({route, navigation}) => {
                 </View> 
                 {categoryState != undefined && 
                     <CategoryPicker 
-                        modalVisible={modalVisible}
+                        isVisible={modalVisible}
                         closeModal={()=>setModalVisible(false)}
                         category={categoryState}
                         setCategory={setCategoryState}

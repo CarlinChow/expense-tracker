@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Picker } from '@react-native-picker/picker'
 import { Text, View, StyleSheet, ActivityIndicator, TouchableOpacity, TouchableHighlight } from 'react-native'
 import Modal from 'react-native-modal'
@@ -7,14 +7,14 @@ import { useQuery } from '@tanstack/react-query'
 import { getCategories } from './helpers/utils'
 
 type Props = {
-    modalVisible: boolean,
+    isVisible: boolean,
     closeModal: Function,
-    category: Category,
+    category?: Category,
     setCategory: Function,
 }
 
 const CategoryPicker:React.FC<Props> = ({
-    modalVisible,
+    isVisible,
     closeModal,
     category,
     setCategory,
@@ -27,7 +27,7 @@ const CategoryPicker:React.FC<Props> = ({
     return (
         <Modal
             style={{ margin: 0 }}
-            isVisible={modalVisible}
+            isVisible={isVisible}
             onBackdropPress={() => closeModal()}
             hideModalContentWhileAnimating={true}
             useNativeDriver={true}
@@ -42,7 +42,7 @@ const CategoryPicker:React.FC<Props> = ({
                     <>
                     <Picker
                         style={styles.picker}
-                        selectedValue={category.name}
+                        selectedValue={category?.name}
                         onValueChange={(_, itemIndex) => setCategory(data[itemIndex])}
                     >
                         {data?.map((category) => 

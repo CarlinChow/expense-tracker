@@ -3,11 +3,16 @@ export type Transaction = {
     amount: number,
     date: string,
     description: string,
-    transactionType: "EXPENSE" | "INCOME"
-    category?: Category
+    transactionType: TransactionType,
+    category?: Category,
 }
 
+export type TransactionType = "EXPENSE" | "INCOME"
+
 export type Category = {
-    id: number, 
-    name: string
+    categoryType: CategoryType,
+    id: number,
+    name: string,
 }
+
+export type CategoryType = "DEFAULT" | "CUSTOM"

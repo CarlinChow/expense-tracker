@@ -76,7 +76,7 @@ const Body = () => {
             <Text style={styles.title}>{"Latest Transactions"}</Text>
             <View style={styles.card}>
                 {isPending && <ActivityIndicator size='large'/>}
-                {isSuccess && data.map((transaction, index) => {
+                {isSuccess && data.slice(0, 10).map((transaction, index) => {
                     if(index === data.length - 1){ // last item
                         return (<TransactionItem style={{borderBottomWidth: 0}} transaction={transaction} key={transaction.id}/>)
                     }else{

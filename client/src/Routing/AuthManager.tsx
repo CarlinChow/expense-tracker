@@ -8,7 +8,7 @@ import SplashPage from '../Common/SplashPage';
 import TabRoutes from './TabRoutes';
 import SignInScreen from '../Auth/SignInScreen';
 import SignUpScreen from '../Auth/SignUpScreen';
-import TransactionFormScreen from '../Modal/TransactionFormScreen';
+import TransactionFormScreen from '../TransactionForm/TransactionFormScreen';
 import axios from 'axios'
 import TransactionScreen from '../Transaction/TransactionScreen';
 import type { RootStackParamList } from './types';
@@ -155,20 +155,19 @@ const Routes = () => {
                                 name="transactionForm" 
                                 component={TransactionFormScreen}
                                 options={{
-                                    headerShown: false,
-                                    presentation: 'modal'
+                                    presentation: 'modal',
+                                    headerTitle: 'Create Transaction',
+                                    headerStyle:{
+                                        backgroundColor: '#F8F8FF'
+                                    },
+                                    headerShadowVisible: false,
                                 }}
                             />
                             <Stack.Screen 
                                 name="transaction" 
                                 component={TransactionScreen}
                                 options={{
-                                    headerShown: false
-                                    // headerShadowVisible: false,
-                                    // headerStyle: {
-                                    //     backgroundColor: '#F8F8FF'
-                                    // },
-                                    // title: "",
+                                    headerShown: false,
                                 }}
                             />
                         </Stack.Group>
