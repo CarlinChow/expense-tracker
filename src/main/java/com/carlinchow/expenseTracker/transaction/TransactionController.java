@@ -1,18 +1,15 @@
 package com.carlinchow.expenseTracker.transaction;
 
-import com.carlinchow.expenseTracker.category.Category;
 import com.carlinchow.expenseTracker.transaction.Expense.ExpenseRequestDto;
 import com.carlinchow.expenseTracker.transaction.Income.IncomeRequestDto;
 import com.carlinchow.expenseTracker.user.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -27,7 +24,10 @@ public class TransactionController {
 
     // add more configurability with get transaction request, ie. paging, sorting etc
     @GetMapping
-    public List<TransactionDto> getAllTransactions(@AuthenticationPrincipal User user){
+    public List<TransactionDto> getAllTransactions(@RequestParam(required = false) Integer month, @RequestParam(required = false) Integer year,  @AuthenticationPrincipal User user){
+        if(month != null && year != null){
+            return this.service.getAllTransactionsByMonth(month, year, user);
+        }
         return this.service.getAllTransactions(user);
     }
 
@@ -50,22 +50,17 @@ public class TransactionController {
     }
 
     @PutMapping("/income/{id}")
-    public void updateIncome(@PathVariable Long id,
-            @RequestParam(required = false)
-            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date,
-            @RequestParam(required = false) Float amount,
-            @RequestParam(required = false) String description,
-            @AuthenticationPrincipal User user){
-        this.service.updateIncome(id, date, amount, description, user);
+    public void updateIncome(@PathVariable Long id, @RequestBody IncomeRequestDto income, @AuthenticationPrincipal User user){
+        this.service.updateIncome(id, income.getDate(), income.getAmount(), income.getDescription(), user);
     }
 
     @PutMapping("/expense/{id}")
-    public void updateExpense(@PathVariable Long id,
-                             @RequestParam(required = false) LocalDate date,
-                             @RequestParam(required = false) Float amount,
-                             @RequestParam(required = false) String description,
-                             @RequestParam(required = false) Category category,
-                             @AuthenticationPrincipal User user){
-        this.service.updateExpense(id, date, amount, description, category, user);
+    public void updateExpense(@PathVariable Long id, @RequestBody ExpenseRequestDto expense, @AuthenticationPrincipal User user){   
+        this.service.updateExpense(id, 
+            expense.getDate(), 
+            expense.getAmount(), 
+            expense.getDescription(), 
+            expense.getCategory(), 
+            user);
     }
 }

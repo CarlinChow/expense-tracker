@@ -1,3 +1,12 @@
+server:
+  ssl:
+    enabled: true
+    key-store: classpath:springboot.p12
+    key-store-password: password
+    key-store-type: pkcs12
+    key-alias: springboot
+    key-password: password
+  port: 8443
 spring:
   jpa:
     properties:
@@ -8,9 +17,3 @@ logging:
   level:
     sql: debug
     org.hibernate.orm.jdbc.bind: trace
-server:
-   port: 443
-   ssl:
-      key-store: keystore.p12
-      keyStoreType: PKCS12
-      keyAlias: tomcat

@@ -6,10 +6,13 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Getter
 @AllArgsConstructor
 public class IncomeRequestDto {
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "date field required")
     private LocalDate date;
 

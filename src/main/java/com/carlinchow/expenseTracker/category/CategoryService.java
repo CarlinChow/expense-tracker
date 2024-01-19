@@ -31,13 +31,19 @@ public class CategoryService {
     public List<CategoryDto> getCategories(Long id) {
         List<CategoryDto> defaultCategories = defaultCategoryRepository.findAllCategoryDto();
         List<CategoryDto> customCategories = customCategoryRepository.findAllCategoryDtoByUser(id);
-        if(customCategories.size() > 0){
-            return Stream.concat(defaultCategories.stream(), customCategories.stream()).toList();
-        }
-        return defaultCategories;
+        return Stream.concat(defaultCategories.stream(), customCategories.stream())
+                    .sorted((category1, category2) -> category1.getName().compareTo(category2.getName())) // sort alphabeticallly 
+                    .toList();
     }
 
     public void createCustomCategory(Category category, User user) {
+        String categoryName = category.getName();
+        Optional<CustomCategory> optCategory = this.customCategoryRepository.findByNameAndUser(categoryName, user);
+        if(optCategory.isPresent()){
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "You already have a category: " + category.getName() + " with the same name");
+        }
         CustomCategory customCategory = new CustomCategory(category.getName(), user);
         this.customCategoryRepository.save(customCategory);
     }

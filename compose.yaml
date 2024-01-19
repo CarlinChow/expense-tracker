@@ -1,15 +1,16 @@
 services:
-  app:
+  server:
     container_name: "server"
     image: 'expense-tracker/server:latest'
     ports:
       - "8080:8080"
+      - "8443:8443"
     build:
       context: .
     depends_on:
-      - postgres
+      - db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
       - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
       - APPLICATION_SECURITY_JWT_SECRETKEY=${JWT_SECRET}
@@ -17,9 +18,10 @@ services:
       - SPRING_JPA_HIBERNATE_DDLAUTO=create-drop # change to update in production
       - SERVER_ERROR_INCLUDEMESSAGE=always # change to on-param in production
       - SERVER_ERROR_INCLUDEBINDINGERRORS=always # change in production
-      - SERVER_SSL_KEYSTOREPASSWORD=${SSL_PASSWORD}
+      # - SERVER_SSL_KEYSTOREPASSWORD=${SSL_PASSWORD}
+      # - SERVER_SSL_KEYPASSWORD=${SSL_PASSWORD}
 
-  postgres:
+  db:
     container_name: "database"
     image: 'postgres:latest'
     restart: always
@@ -31,5 +33,17 @@ services:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
+  # client:
+  #   container_name: "client"
+  #   build: "./client"
+  #   ports: 
+  #     - "8081:8081"
+  #   depends_on:
+  #     - server
+  #   stdin_open: true
+  #   environment:
+  #     CHOKIDAR_USEPOLLING: "true"
+  #   volumes:
+  #     - ".:/app"
 volumes:
   pgdata:
