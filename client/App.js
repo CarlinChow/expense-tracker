@@ -5,7 +5,8 @@ import ToastManager, { Toast } from 'toastify-react-native'
 
 const queryClient = new QueryClient({
     queryCache: new QueryCache({
-        onError: (error) => Toast.error(`Something went wrong: ${error.message}`, 'top')
+        onError: (error) => Toast.error(`Something went wrong: ${error.message}`, 'top'),
+        defaultOptions: { queries: { staleTime: Infinity } }
     })
 })
 

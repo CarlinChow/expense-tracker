@@ -30,4 +30,30 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 t.date DESC
            """)
     List<TransactionDto> findAllByUserOrderByDateDesc(User user);
+
+    @Query("""
+            SELECT
+                t.id AS id,
+                t.date AS date,
+                t.amount AS amount,
+                t.description AS description,
+                t.user AS user,
+                t.transactionType AS transactionType,
+                t.category AS category
+            FROM
+                Transaction t
+                INNER JOIN
+                t.user u
+                LEFT JOIN
+                t.category c
+            WHERE
+                u.id = :#{#user.id}
+                AND
+                MONTH(t.date) = :month
+                AND
+                YEAR(t.date) = :year
+            ORDER BY
+                t.date Asc
+           """)
+    List<TransactionDto> findAllByUserAndMonthAndYearOrderByDateAsc(int month, int year, User user);
 }

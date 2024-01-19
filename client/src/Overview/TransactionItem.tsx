@@ -1,8 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
 import { View, ViewStyle, TouchableHighlight, Text, StyleSheet } from 'react-native'
-import { formatDate } from '../Common/helpers/utils'
+import { formatDate, stringToDateObject } from '../Common/helpers/utils'
 import type { OverviewScreenNavigationProp } from './types';
 import type { Transaction } from '../Common/types'
+import React from 'react';
+import { MaterialIcons } from '@expo/vector-icons';
 
 type Props = {
     transaction: Transaction,
@@ -29,24 +31,19 @@ const TransactionItem: React.FC<Props> = ({transaction, style}) => {
             }}
         >
             <>
-                <View style={styles.detailsContainer}>
+                <View style={{flexDirection: 'row', gap: 5, alignItems: 'center'}}>
+                    {type === "EXPENSE" ? 
+                        <MaterialIcons name="money-off" size={30} color="#fd5c63" /> :
+                        <MaterialIcons name="attach-money" size={30} color="#62A362" />
+                    }
+                    <View style={styles.detailsContainer}>
                     <Text style={styles.description}>{description}</Text>
-                    {type === "EXPENSE" as const && (<Text>{category?.name}</Text> )}
-                    <Text style={styles.date}>{formatDate(date)}</Text>
-                    {type === "EXPENSE" as const ?
-                        (<View style={styles.expenseTextContainer}>
-                            <Text style={styles.expenseText}>
-                                Expense
-                            </Text>
-                        </View>) :
-                        (<View style={styles.incomeTextContainer}>
-                            <Text style={styles.incomeText}>
-                                Income
-                            </Text>
-                        </View>)}
+                    {type === "EXPENSE" as const && (<Text style={styles.categoryText}>{category?.name}</Text> )}
+                    <Text style={styles.date}>{stringToDateObject(date).toDateString().slice(4,10)}</Text>
+                </View>
                 </View>
                 <View style={styles.amountContainer}>
-                    <Text style={[styles.amountText, {color: type === "EXPENSE" as const ? 'black' : '#6495ED'}]}>
+                    <Text style={[styles.amountText, {color: type === 'EXPENSE' ? '#fd5c63' : '#62A362'}]}>
                         {type === "EXPENSE" as const ? '-':''}${amount.toFixed(2)}
                     </Text>
                 </View>
@@ -57,14 +54,21 @@ const TransactionItem: React.FC<Props> = ({transaction, style}) => {
 
 const styles = StyleSheet.create({
     item: {
+        alignSelf: 'stretch',
+        backgroundColor: 'white',
         display: 'flex',
         justifyContent: 'space-between',
         flexDirection: 'row',
         width: '100%',
-        paddingVertical: 15,
-        paddingHorizontal: 25,
-        borderBottomWidth: 0.4,
-        borderColor: '#DCDCDC'
+        padding: 15,
+        shadowColor: 'lightgrey',
+        shadowOffset: {
+            width: 0,
+            height: 0,
+          },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        borderRadius: 5,
     },
     detailsContainer: {
         display: 'flex',
@@ -72,39 +76,22 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start'
     },
     description:{
-        fontSize: 16,
-        fontWeight: '600'
+        fontSize: 15,
+        fontWeight: '500'
     },
     date:{
         fontSize: 12,
         opacity: 0.6,
     },
-    incomeTextContainer: {
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        borderRadius: 10,
-        backgroundColor: "#6495ED",
-    },
-    incomeText: {
-        color: 'white',
-        fontSize: 12,
-    },
-    expenseTextContainer: {
-        paddingHorizontal: 8,
-        paddingVertical: 3,
-        borderRadius: 10,
-        backgroundColor: "#fd5c63",
-    },
-    expenseText: {
-        color: 'white',
-        fontSize: 12,
+    categoryText:{
+        fontSize: 13,
     },
     amountContainer: {
 
     },
     amountText:{
-        fontSize: 17,
-        fontWeight: '400'
+        fontSize: 15,
+        fontWeight: '500'
     }
 })
 

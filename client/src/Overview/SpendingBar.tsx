@@ -5,7 +5,6 @@ import ProgressBar from '../Common/ProgressBar'
 type Props = {
     income: number,
     expense: number,
-    upcomingExpense?: number,
 }
 
 const SpendingBar: React.FC<Props> = ({
@@ -24,7 +23,7 @@ const SpendingBar: React.FC<Props> = ({
                 height={12}
             /> 
             <Text style={styles.text}>
-                <Text style={styles.boldedText}>${expense}</Text> of ${income} spent this month
+                <Text style={styles.boldedText}>${expense.toFixed(0)}</Text> of ${income.toFixed(0)} spent this month
             </Text>
         </View>
     )

@@ -32,3 +32,18 @@ export const getTransactions = async():Promise<Transaction[]> => {
     const response  = await axios.get(`${API_URL}/transaction`)
     return response.data
 }
+
+type queryParams = {
+    month: number,
+    year: number
+}
+export const getTransactionsByMonth = async(filters:queryParams):Promise<Transaction[]> => {
+    const { month, year } = filters
+    const response  = await axios.get(`${API_URL}/transaction`, {
+        params: {
+            month: month + 1, // b/c of JS datetime behaviour
+            year,
+        }
+    })
+    return response.data
+}

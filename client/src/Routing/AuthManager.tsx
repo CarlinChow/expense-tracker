@@ -11,6 +11,7 @@ import SignUpScreen from '../Auth/SignUpScreen';
 import TransactionFormScreen from '../TransactionForm/TransactionFormScreen';
 import axios from 'axios'
 import TransactionScreen from '../Transaction/TransactionScreen';
+import TransactionListScreen from '../TransactionList/TransactionListScreen';
 import type { RootStackParamList } from './types';
 
 type AuthContext = {
@@ -168,6 +169,16 @@ const Routes = () => {
                                 component={TransactionScreen}
                                 options={{
                                     headerShown: false,
+                                }}
+                            />
+                            <Stack.Screen
+                                name="transactionList"
+                                component={TransactionListScreen}
+                                options={{
+                                    headerStyle:{
+                                        backgroundColor: '#F8F8FF'
+                                    },
+                                    headerShadowVisible: false,
                                 }}
                             />
                         </Stack.Group>

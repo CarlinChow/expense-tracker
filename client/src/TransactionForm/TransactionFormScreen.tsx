@@ -9,7 +9,6 @@ import CategoryPicker from '../Common/CategoryPicker'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import LoadingModal from '../Common/LoadingModal'
 
-
 type Props = NativeStackScreenProps<RootStackParamList, 'transactionForm', 'RootStack'>
 
 const TransactionForm: React.FC<Props> = ({navigation}) => {
